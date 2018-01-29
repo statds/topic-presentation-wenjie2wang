@@ -1,0 +1,607 @@
+---
+title: "Interactive Data Visualization with R Shiny"
+author: |
+  | Wenjie Wang
+  | Department of Statistics, UConn
+date: January 30, 2018
+---
+
+
+```{r setup, echo = FALSE}
+## allow slightly longer command lines
+options(width = 90)
+
+##' Check, Install and Attach Multiple R packages Specified
+##'
+##' The function first Checks whether the packages given were installed. Then
+##' install them if they are not, then attach them to the search path.
+##'
+##' @usage need.packages(pkg, ...)
+##' @param pkg A character vector specifying the packages needed to reproduce
+##'     this document.
+##' @param ... Other arguments passed to function \code{\link[base]require}.
+##' @return \code{NULL} invisibly.
+##' @examples
+##' need.pacakges(c("ggplot2", "geepack"))
+need.packages <- function(pkg, ...)
+{
+    new.pkg <- pkg[! (pkg %in% installed.packages()[, "Package"])]
+    if (length(new.pkg))
+        install.packages(new.pkg, repos = "https://cloud.r-project.org")
+    foo <- function(a, ...) suppressMessages(require(a, ...))
+    sapply(pkg, foo, character.only = TRUE)
+    invisible(NULL)
+}
+
+## other packages needed for reproducing these slides
+pkgs <- c("DT", "dygraphs", "htmltools", "leaflet", "plotly", "shiny")
+need.packages(pkgs)
+
+
+### other simple utility functions
+## create a tag with some handy defaults
+a_new <- function(x, href = x, target = "_blank", ...)
+{
+    htmltools::tags$a(x, href = href, target = target, ...)
+}
+## paste with forward slash
+paste4 <- function(...) paste(..., sep = "/")
+
+
+### define some constants
+slides_url <- "https://statds.github.io/topic-presentation-wenjie2wang/"
+repo_url <- "https://github.com/statds/topic-presentation-wenjie2wang/"
+rstudio_github <- "https://github.com/rstudio"
+shiny_homepage <- "https://shiny.rstudio.com"
+shiny_examples_github <- paste4(rstudio_github, "shiny-examples")
+shiny_gallery <- paste4(shiny_homepage, "gallery")
+shiny_tutorial <- paste4(shiny_homepage, "tutorial")
+shiny_cheatsheet <- paste4(rstudio_github, "cheatsheets/blob/master/shiny.pdf")
+```
+
+## Getting Started
+
+- slides available at `r sprintf('[%s](%s)', slides_url, slides_url)`
+
+- source code of the slides: `r a_new(repo_url)`
+
+- R packages needed for following examples:
+
+  ```{r pkgs-slides, eval = FALSE}
+  install.packages(c("DT", "dygraphs", "leaflet",
+                     "plotly", "shiny", "shinythemes"))
+  ```
+
+
+## What is R Shiny?
+
+- **shiny** is an R package that makes it easy to build interactive web
+    applications straight from R.
+  - homepage: `r a_new(shiny_homepage)`
+  - a collection of toy examples by RStudio:
+    `r a_new(shiny_examples_github)`
+  - official `r a_new('gallery', shiny_gallery)`,
+    `r a_new('tutorial', shiny_tutorial)`, and
+    `r a_new('cheatsheet', shiny_cheatsheet)`
+  - other galleries:
+    `r a_new("Show me Shiny", "https://www.showmeshiny.com")`,
+    `r a_new("Plotly", "https://plot.ly/r/shiny-gallery/")`, ...
+
+
+---
+
+## Selective examples
+
+- `r a_new("Hello Shiny!", "https://gallery.shinyapps.io/001-hello/")`
+- `r a_new("Exploring Historical English Soccer Data",
+           "https://www.showmeshiny.com/historical-english-soccer/")`
+- `r a_new("Weekly influenza surveillance data",
+           "https://github.com/kb230557/Flu_Shiny_App")`
+- `r a_new("Paris car accidents",
+           "http://www.remyzum.com/shiny/Paris_Accidentologie/")`
+- `r a_new("Real estate analytics", "https://www.showmeshiny.com/shinyhome/")`
+  using Shiny dashboard
+
+
+## Structure of a Shiny app
+
+By execution order:
+
+1. `global.R`: an optional script for code needed in `ui.R` and
+   `server.R`
+
+    ```r
+    library(shiny)              # e.g., attach the Shiny package
+    ```
+
+2. `ui.R`: define user interface (UI) design
+
+    ```r
+    shinyUI(fluidPage(
+        ## e.g., create a fluid page
+    ))
+    ```
+
+3. `server.R`: define server-side logic
+
+    ```r
+    shinyServer(function(input, output, session) {
+        ## a function with two required argument, `input` and `output`,
+        ## and an optional argument `session`
+    })
+    ```
+
+
+## Alternative structure
+
+- a sinlge script called `app.R`
+
+```r
+library(shiny)
+
+## e.g., create a fluid page
+ui <- fluidPage(
+    ## some ui elements and widgets
+)
+
+## define server-side logic
+server <- function(input, output, session) {
+    ## the server function body
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+
+## Sidebar layout
+
+```{r sidebar-layout}
+ui <- fluidPage(
+    titlePanel("my title panel"),
+    sidebarLayout(
+        sidebarPanel("my sidebar panel"),
+        mainPanel("my main panel")
+    )
+)
+```
+
+<hr/>
+
+```{r sidebar-layout-preview, echo = FALSE, results = "asis"}
+ui
+```
+
+---
+
+- Shiny uses `r a_new("Twitter Bootstrap 3",
+  "https://getbootstrap.com/docs/3.3/")`, the probably most popular HTML, CSS,
+  and JS framework for developing responsive, mobile first projects on the web.
+
+- the essential HTML code defined in `ui`:
+
+  ```{r sidebar-layout-html, echo = FALSE, comment = "", class.output = "sourceCode html"}
+  print(ui)
+  ```
+
+- The more fundamental layout constructor functions are `fluidRow()` and
+  `column()`.
+
+
+## HTML builders
+
+<!--
+    the following table source is mainly taken from
+    http://shiny.rstudio.com/tutorial/written-tutorial/lesson2/
+-->
+
+<table>
+  <thead>
+    <tr>
+      <th>Shiny</th>
+      <th>HTML5</th>
+      <th>creates</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>p()</code></td>
+      <td><code>&lt;p&gt;</code></td>
+      <td>A paragraph of text</td>
+    </tr>
+    <tr>
+      <td><code>h1(), ..., h6()</code></td>
+      <td><code>&lt;h1&gt;, ..., &lt;h6&gt;</code></td>
+      <td>a first, ..., sixth level header</td>
+    </tr>
+    <tr>
+      <td><code>a()</code></td>
+      <td><code>&lt;a&gt;</code></td>
+      <td>A hyper link</td>
+    </tr>
+    <tr>
+      <td><code>br()</code></td>
+      <td><code>&lt;br&gt;</code></td>
+      <td>A line break</td>
+    </tr>
+    <tr>
+      <td><code>div()</code></td>
+      <td><code>&lt;div&gt;</code></td>
+      <td>A division with a uniform style</td>
+    </tr>
+    <tr>
+      <td><code>span()</code></td>
+      <td><code>&lt;span&gt;</code></td>
+      <td>An in-line version of division</td>
+    </tr>
+    <tr>
+      <td><code>strong()</code></td>
+      <td><code>&lt;strong&gt;</code></td>
+      <td>Bold text</td>
+    </tr>
+    <tr>
+      <td><code>em()</code></td>
+      <td><code>&lt;em&gt;</code></td>
+      <td>Italicized text</td>
+    </tr>
+    <tr>
+      <td><code>...</code></td>
+      <td><code>...</code></td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <td><code>HTML()</code></td>
+      <td>&nbsp;</td>
+      <td>Directly passes character strings as HTML</td>
+    </tr>
+  </tbody>
+</table>
+
+
+- **shiny** imports HTML builder functions from **htmltools**.
+- `names(tags)` returns a complete valid HTML5 tag list.
+
+
+## Basic widgets
+
+- What is a web widget? A web element that users can interact with.
+- `r a_new("Standard widgets gallery",
+  "https://shiny.rstudio.com/gallery/widget-gallery.html")`
+- The first two arguments for each widget function are
+  - `id` for widget name: users will not see the name, but you can use it
+    to access the widget's value. The name should be a character string.
+  - `label` for widget label: this label will appear with the widget in your
+    app. It should be a character string, but it can be an empty string `""`.
+
+---
+
+The standard Shiny widgets include
+
+<!--
+    table source directly taken from
+    http://shiny.rstudio.com/tutorial/written-tutorial/lesson3/
+-->
+
+<table>
+  <thead>
+    <tr>
+      <th>function</th>
+      <th>widget</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>actionButton</code></td>
+      <td>Action Button</td>
+    </tr>
+    <tr>
+      <td><code>checkboxGroupInput</code></td>
+      <td>A group of check boxes</td>
+    </tr>
+    <tr>
+      <td><code>checkboxInput</code></td>
+      <td>A single check box</td>
+    </tr>
+    <tr>
+      <td><code>dateInput</code></td>
+      <td>A calendar to aid date selection</td>
+    </tr>
+    <tr>
+      <td><code>dateRangeInput</code></td>
+      <td>A pair of calendars for selecting a date range</td>
+    </tr>
+    <tr>
+      <td><code>fileInput</code></td>
+      <td>A file upload control wizard</td>
+    </tr>
+    <tr>
+      <td><code>helpText</code></td>
+      <td>Help text that can be added to an input form</td>
+    </tr>
+    <tr>
+      <td><code>numericInput</code></td>
+      <td>A field to enter numbers</td>
+    </tr>
+    <tr>
+      <td><code>radioButtons</code></td>
+      <td>A set of radio buttons</td>
+    </tr>
+    <tr>
+      <td><code>selectInput</code></td>
+      <td>A box with choices to select from</td>
+    </tr>
+    <tr>
+      <td><code>sliderInput</code></td>
+      <td>A slider bar</td>
+    </tr>
+    <tr>
+      <td><code>submitButton</code></td>
+      <td>A submit button</td>
+    </tr>
+    <tr>
+      <td><code>textInput</code></td>
+      <td>A field to enter text</td>
+    </tr>
+  </tbody>
+</table>
+
+
+## Reactive output
+
+`*Output` functions in `ui` or `ui.R` turn R objects into output of UI.
+
+<!--
+    table source taken from
+    http://shiny.rstudio.com/tutorial/written-tutorial/lesson4/
+-->
+
+<table>
+  <thead>
+    <tr>
+      <th>Output function</th>
+      <th>Creates</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>htmlOutput</code></td>
+      <td>raw HTML</td>
+    </tr>
+    <tr>
+      <td><code>imageOutput</code></td>
+      <td>image</td>
+    </tr>
+    <tr>
+      <td><code>plotOutput</code></td>
+      <td>plot</td>
+    </tr>
+    <tr>
+      <td><code>tableOutput</code></td>
+      <td>table</td>
+    </tr>
+    <tr>
+      <td><code>textOutput</code></td>
+      <td>text</td>
+    </tr>
+    <tr>
+      <td><code>uiOutput</code></td>
+      <td>raw HTML</td>
+    </tr>
+    <tr>
+      <td><code>verbatimTextOutput</code></td>
+      <td>text</td>
+    </tr>
+  </tbody>
+</table>
+
+- These `*Output` functions take output name/ID as input.
+
+---
+
+`render*` functions in `server` or `server.R`
+
+<!--
+    table source taken from
+    http://shiny.rstudio.com/tutorial/written-tutorial/lesson4/
+-->
+
+<table>
+  <thead>
+    <tr>
+      <th>render function</th>
+      <th>creates</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>renderImage</code></td>
+      <td>images (saved as a link to a source file)</td>
+    </tr>
+    <tr>
+      <td><code>renderPlot</code></td>
+      <td>plots</td>
+    </tr>
+    <tr>
+      <td><code>renderPrint</code></td>
+      <td>any printed output</td>
+    </tr>
+    <tr>
+      <td><code>renderTable</code></td>
+      <td>data frame, matrix, other table like structures</td>
+    </tr>
+    <tr>
+      <td><code>renderText</code></td>
+      <td>character strings</td>
+    </tr>
+    <tr>
+      <td><code>renderUI</code></td>
+      <td>a Shiny tag object or HTML</td>
+    </tr>
+  </tbody>
+</table>
+
+- These `render*` functions take a single argument: an R expression surrounded
+  by `{}`.
+- Shiny runs the R expressions inside `render*` functions once each time a user
+  changes the value of a widget.
+
+---
+
+
+```r
+ui <- fluidPage(
+    titlePanel("a simple example of reactive output"),
+    sidebarLayout(
+        sidebarPanel(
+            selectInput("cyl", "Cylinders",
+                        choices = sort(unique(mtcars$cyl)),
+                        selected = 4)
+        ),
+        mainPanel(plotOutput("mpg_boxplot"))
+    )
+)
+
+server <- function(input, output) {
+    ## the `renderPlot` runs every time a user changes input$cyl
+    output$mpg_boxplot <- renderPlot({
+        ## filtering the cars models in the mtcars dataset
+        ## by a input cylinder number
+        dat <- subset(mtcars, cyl == input$cyl)
+        ## draw a boxplot of mpg for the filtered data
+        with(dat, boxplot(mpg))
+    })
+}
+
+shinyApp(ui, server)
+```
+
+---
+
+```{r mtcars-app, echo = FALSE}
+knitr::include_app("https://shiny.wenjie-stat.me/examples/mtcars/",
+                   height = "600px")
+```
+
+
+## Reactive expressions
+
+- Create a reactive expression by the `reactive()` function, which takes
+  an R expression surrounded by `{}` similar to `render*` functions.
+
+```r
+server <- function(input, output, session) {
+    ## e.g., a simple reactive expression for filtering the cars models
+    ## in the mtcars dataset by a input cylinder
+    dataInput <- reactive({
+        subset(mtcars, cyl == input$cyl)
+    })
+    ## draw a boxplot of mpg for the filtered data
+    output$mpg_boxplot <- renderPlot({
+        dat <- dataInput()
+        with(dat, boxplot(mpg))
+    })
+}
+```
+
+- Reactive expressions cache values and update them only when it is necessary,
+  which make the app faster.
+
+
+## Share Shiny apps
+
+- share as R scripts by `runApp()`, `runUrl()`, `runGitHub()` or `runGist()`
+
+- share as a web page:
+  - `r a_new("https://www.shinyapps.io")`
+    - free for 5 apps and 25 active hours per month
+  - Shiny server open source
+    - very basic features
+    - e.g., `r a_new("https://shiny.wenjie-stat.me")`
+  - Shiny server Pro
+  - RStudio Connect
+
+
+## More advanced HTML widgets
+
+- **`r a_new("htmlwidgets", "http://www.htmlwidgets.org/")`**
+  package provides a framework that helps to bring the best of
+  JavaScript data visualization to R.
+- example R packages built with **htmltwidgets**:
+  - **`r a_new("leaflet", paste4(rstudio_github, "leaflet"))`**
+    for geo-spatial mapping powered by JavaScript library leaflet
+  - **`r a_new("dygraphs", paste4(rstudio_github, "dygraphs"))`**
+    for time series charting powered by JavaScript library dygraphs
+  - **`r a_new("plotly", "https://plot.ly/r/")`** and
+    **`r a_new("Highcharter", "http://jkunst.com/highcharter/")`**
+    for general interactive graphics powered by
+    JavaScript library plotly.js and Highcharts, respectively.
+  - **`r a_new("DT", paste4(rstudio_github, "DT"))`** for tabular data display
+    powered by JavaScript library DataTables.
+
+
+## leaflet example
+
+- locations of earthquakes off Fiji
+
+```{r leaflet-app, echo = FALSE}
+knitr::include_app("https://shiny.wenjie-stat.me/examples/leaflet/",
+                   height = "500px")
+```
+
+
+## dygraphs example
+
+```{r dygraphs-app, echo = FALSE}
+knitr::include_app("https://shiny.wenjie-stat.me/examples/dygraphs/",
+                   height = "500px")
+```
+
+
+## plotly example
+
+```{r plotly-app, echo = FALSE}
+knitr::include_app("https://shiny.wenjie-stat.me/examples/plotly/",
+                   height = "600px")
+```
+
+
+## DT example
+
+```{r dt-app, echo = FALSE}
+knitr::include_app("https://shiny.wenjie-stat.me/examples/DT/",
+                   height = "600px")
+```
+
+
+## More options on UI and control widgets
+
+- **`r a_new("shinythemes", paste4(rstudio_github, "shinythemes"))`**
+  includes several Bootstrap themes from
+  `r a_new("Bootswatch", "https://bootswatch.com/")`.
+- **`r a_new("shinydashboard", paste4(rstudio_github, "shinythemes"))`**
+  makes it easy to use Shiny to create dashboards.
+- **`r a_new("miniUI", paste4(rstudio_github, "miniUI"))`** provides UI widget
+  and layout functions for writing Shiny apps that work well on small screens.
+- **`r a_new("shinyWidgets", "https://github.com/dreamRs/shinyWidgets")`**
+  provides more control widgets that are not available in **shiny** package.
+- **`r a_new("shinyAce", "https://github.com/trestletech/shinyAce")`**
+  integrates the `r a_new("Ace text editor", "https://ace.c9.io")` with Shiny.
+- **`r a_new("shiny.semantic", "https://github.com/Appsilon/shiny.semantic")`**
+  provides a wrapper for `r a_new("Semantic UI", "https://semantic-ui.com")`.
+- ...
+
+
+## Further reading
+
+- `r a_new("a collection of Shiny tips & tricks",
+  "https://github.com/daattali/advanced-shiny")`
+- `r a_new("modularizing Shiny app code",
+  "https://shiny.rstudio.com/articles/modules.html")`
+- **`r a_new("shinytest", paste4(rstudio_github, "shinytest"))`** for automated
+  testing for Shiny apps
+- `r a_new("more articles", "https://shiny.rstudio.com/articles/")` from RStudio
+
+
+## Thanks!
+
+> - a cool plate found at (UConn) Y lot in last Summer
+    <br/><img src="www/imgs/IMG_20170812_142318.jpg" width=350 />
