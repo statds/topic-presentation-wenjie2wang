@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <meta name="dcterms.date" content="2018-01-30" />
+  <title>Interactive Data Visualization with R Shiny</title>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
+  <link rel="stylesheet" href="index_files/reveal.js-3.3.0.1/css/reveal.css"/>
+
+
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; position: absolute; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; }
+pre.numberSource a.sourceLine:empty
+  { position: absolute; }
+pre.numberSource a.sourceLine::before
+  { content: attr(data-line-number);
+    position: absolute; left: -5em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<link rel="stylesheet" href="index_files/reveal.js-3.3.0.1/css/theme/white.css" id="theme">
+
+
+  <!-- some tweaks to reveal css -->
+  <style type="text/css">
+    .reveal h1 { font-size: 2.0em; }
+    .reveal h2 { font-size: 1.5em;  }
+    .reveal h3 { font-size: 1.25em;	}
+    .reveal h4 { font-size: 1em;	}
+
+    .reveal .slides>section,
+    .reveal .slides>section>section {
+      padding: 0px 0px;
+    }
+
+
+
+    .reveal table {
+      border-width: 1px;
+      border-spacing: 2px;
+      border-style: dotted;
+      border-color: gray;
+      border-collapse: collapse;
+      font-size: 0.7em;
+    }
+
+    .reveal table th {
+      border-width: 1px;
+      padding-left: 10px;
+      padding-right: 25px;
+      font-weight: bold;
+      border-style: dotted;
+      border-color: gray;
+    }
+
+    .reveal table td {
+      border-width: 1px;
+      padding-left: 10px;
+      padding-right: 25px;
+      border-style: dotted;
+      border-color: gray;
+    }
+
+
+  </style>
+
+    <style type="text/css">code{white-space: pre;}</style>
+
+    <link rel="stylesheet" href="www/css/styles.css"/>
+
+<!-- Printing and PDF exports -->
+<script id="paper-css" type="application/dynamic-css">
+
+/* Default Print Stylesheet Template
+   by Rob Glazebrook of CSSnewbie.com
+   Last Updated: June 4, 2008
+
+   Feel free (nay, compelled) to edit, append, and
+   manipulate this file as you see fit. */
+
+
+@media print {
+
+	/* SECTION 1: Set default width, margin, float, and
+	   background. This prevents elements from extending
+	   beyond the edge of the printed page, and prevents
+	   unnecessary background images from printing */
+	html {
+		background: #fff;
+		width: auto;
+		height: auto;
+		overflow: visible;
+	}
+	body {
+		background: #fff;
+		font-size: 20pt;
+		width: auto;
+		height: auto;
+		border: 0;
+		margin: 0 5%;
+		padding: 0;
+		overflow: visible;
+		float: none !important;
+	}
+
+	/* SECTION 2: Remove any elements not needed in print.
+	   This would include navigation, ads, sidebars, etc. */
+	.nestedarrow,
+	.controls,
+	.fork-reveal,
+	.share-reveal,
+	.state-background,
+	.reveal .progress,
+	.reveal .backgrounds {
+		display: none !important;
+	}
+
+	/* SECTION 3: Set body font face, size, and color.
+	   Consider using a serif font for readability. */
+	body, p, td, li, div {
+		font-size: 20pt!important;
+		font-family: Georgia, "Times New Roman", Times, serif !important;
+		color: #000;
+	}
+
+	/* SECTION 4: Set heading font face, sizes, and color.
+	   Differentiate your headings from your body text.
+	   Perhaps use a large sans-serif for distinction. */
+	h1,h2,h3,h4,h5,h6 {
+		color: #000!important;
+		height: auto;
+		line-height: normal;
+		font-family: Georgia, "Times New Roman", Times, serif !important;
+		text-shadow: 0 0 0 #000 !important;
+		text-align: left;
+		letter-spacing: normal;
+	}
+	/* Need to reduce the size of the fonts for printing */
+	h1 { font-size: 28pt !important;  }
+	h2 { font-size: 24pt !important; }
+	h3 { font-size: 22pt !important; }
+	h4 { font-size: 22pt !important; font-variant: small-caps; }
+	h5 { font-size: 21pt !important; }
+	h6 { font-size: 20pt !important; font-style: italic; }
+
+	/* SECTION 5: Make hyperlinks more usable.
+	   Ensure links are underlined, and consider appending
+	   the URL to the end of the link for usability. */
+	a:link,
+	a:visited {
+		color: #000 !important;
+		font-weight: bold;
+		text-decoration: underline;
+	}
+	/*
+	.reveal a:link:after,
+	.reveal a:visited:after {
+		content: " (" attr(href) ") ";
+		color: #222 !important;
+		font-size: 90%;
+	}
+	*/
+
+
+	/* SECTION 6: more reveal.js specific additions by @skypanther */
+	ul, ol, div, p {
+		visibility: visible;
+		position: static;
+		width: auto;
+		height: auto;
+		display: block;
+		overflow: visible;
+		margin: 0;
+		text-align: left !important;
+	}
+	.reveal pre,
+	.reveal table {
+		margin-left: 0;
+		margin-right: 0;
+	}
+	.reveal pre code {
+		padding: 20px;
+		border: 1px solid #ddd;
+	}
+	.reveal blockquote {
+		margin: 20px 0;
+	}
+	.reveal .slides {
+		position: static !important;
+		width: auto !important;
+		height: auto !important;
+
+		left: 0 !important;
+		top: 0 !important;
+		margin-left: 0 !important;
+		margin-top: 0 !important;
+		padding: 0 !important;
+		zoom: 1 !important;
+
+		overflow: visible !important;
+		display: block !important;
+
+		text-align: left !important;
+		-webkit-perspective: none;
+		   -moz-perspective: none;
+		    -ms-perspective: none;
+		        perspective: none;
+
+		-webkit-perspective-origin: 50% 50%;
+		   -moz-perspective-origin: 50% 50%;
+		    -ms-perspective-origin: 50% 50%;
+		        perspective-origin: 50% 50%;
+	}
+	.reveal .slides section {
+		visibility: visible !important;
+		position: static !important;
+		width: auto !important;
+		height: auto !important;
+		display: block !important;
+		overflow: visible !important;
+
+		left: 0 !important;
+		top: 0 !important;
+		margin-left: 0 !important;
+		margin-top: 0 !important;
+		padding: 60px 20px !important;
+		z-index: auto !important;
+
+		opacity: 1 !important;
+
+		page-break-after: always !important;
+
+		-webkit-transform-style: flat !important;
+		   -moz-transform-style: flat !important;
+		    -ms-transform-style: flat !important;
+		        transform-style: flat !important;
+
+		-webkit-transform: none !important;
+		   -moz-transform: none !important;
+		    -ms-transform: none !important;
+		        transform: none !important;
+
+		-webkit-transition: none !important;
+		   -moz-transition: none !important;
+		    -ms-transition: none !important;
+		        transition: none !important;
+	}
+	.reveal .slides section.stack {
+		padding: 0 !important;
+	}
+	.reveal section:last-of-type {
+		page-break-after: avoid !important;
+	}
+	.reveal section .fragment {
+		opacity: 1 !important;
+		visibility: visible !important;
+
+		-webkit-transform: none !important;
+		   -moz-transform: none !important;
+		    -ms-transform: none !important;
+		        transform: none !important;
+	}
+	.reveal section img {
+		display: block;
+		margin: 15px 0px;
+		background: rgba(255,255,255,1);
+		border: 1px solid #666;
+		box-shadow: none;
+	}
+
+	.reveal section small {
+		font-size: 0.8em;
+	}
+
+}  
+</script>
+
+
+<script id="pdf-css" type="application/dynamic-css">
+    
+/**
+ * This stylesheet is used to print reveal.js
+ * presentations to PDF.
+ *
+ * https://github.com/hakimel/reveal.js#pdf-export
+ */
+
+* {
+	-webkit-print-color-adjust: exact;
+}
+
+body {
+	margin: 0 auto !important;
+	border: 0;
+	padding: 0;
+	float: none !important;
+	overflow: visible;
+}
+
+html {
+	width: 100%;
+	height: 100%;
+	overflow: visible;
+}
+
+/* Remove any elements not needed in print. */
+.nestedarrow,
+.reveal .controls,
+.reveal .progress,
+.reveal .playback,
+.reveal.overview,
+.fork-reveal,
+.share-reveal,
+.state-background {
+	display: none !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	text-shadow: 0 0 0 #000 !important;
+}
+
+.reveal pre code {
+	overflow: hidden !important;
+	font-family: Courier, 'Courier New', monospace !important;
+}
+
+ul, ol, div, p {
+	visibility: visible;
+	position: static;
+	width: auto;
+	height: auto;
+	display: block;
+	overflow: visible;
+	margin: auto;
+}
+.reveal {
+	width: auto !important;
+	height: auto !important;
+	overflow: hidden !important;
+}
+.reveal .slides {
+	position: static;
+	width: 100%;
+	height: auto;
+
+	left: auto;
+	top: auto;
+	margin: 0 !important;
+	padding: 0 !important;
+
+	overflow: visible;
+	display: block;
+
+	-webkit-perspective: none;
+	   -moz-perspective: none;
+	    -ms-perspective: none;
+	        perspective: none;
+
+	-webkit-perspective-origin: 50% 50%; /* there isn't a none/auto value but 50-50 is the default */
+	   -moz-perspective-origin: 50% 50%;
+	    -ms-perspective-origin: 50% 50%;
+	        perspective-origin: 50% 50%;
+}
+
+.reveal .slides section {
+	page-break-after: always !important;
+
+	visibility: visible !important;
+	position: relative !important;
+	display: block !important;
+	position: relative !important;
+
+	margin: 0 !important;
+	padding: 0 !important;
+	box-sizing: border-box !important;
+	min-height: 1px;
+
+	opacity: 1 !important;
+
+	-webkit-transform-style: flat !important;
+	   -moz-transform-style: flat !important;
+	    -ms-transform-style: flat !important;
+	        transform-style: flat !important;
+
+	-webkit-transform: none !important;
+	   -moz-transform: none !important;
+	    -ms-transform: none !important;
+	        transform: none !important;
+}
+
+.reveal section.stack {
+	margin: 0 !important;
+	padding: 0 !important;
+	page-break-after: avoid !important;
+	height: auto !important;
+	min-height: auto !important;
+}
+
+.reveal img {
+	box-shadow: none;
+}
+
+.reveal .roll {
+	overflow: visible;
+	line-height: 1em;
+}
+
+/* Slide backgrounds are placed inside of their slide when exporting to PDF */
+.reveal section .slide-background {
+	display: block !important;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	z-index: -1;
+}
+
+/* All elements should be above the slide-background */
+.reveal section>* {
+	position: relative;
+	z-index: 1;
+}
+
+/* Display slide speaker notes when 'showNotes' is enabled */
+.reveal .speaker-notes-pdf {
+	display: block;
+	width: 100%;
+	max-height: none;
+	left: auto;
+	top: auto;
+	z-index: 100;
+}
+
+/* Display slide numbers when 'slideNumber' is enabled */
+.reveal .slide-number-pdf {
+	display: block;
+	position: absolute;
+	font-size: 14px;
+}
+
+</script>
+
+
+<script>
+var style = document.createElement( 'style' );
+style.type = 'text/css';
+var style_script_id = window.location.search.match( /print-pdf/gi ) ? 'pdf-css' : 'paper-css';
+var style_script = document.getElementById(style_script_id).text;
+style.innerHTML = style_script;
+document.getElementsByTagName('head')[0].appendChild(style);
+</script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="index_files/bootstrap-3.3.7/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="index_files/bootstrap-3.3.7/js/bootstrap.min.js"></script>
+    <script src="index_files/bootstrap-3.3.7/shim/html5shiv.min.js"></script>
+    <script src="index_files/bootstrap-3.3.7/shim/respond.min.js"></script>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+<section>
+    <h1 class="title">Interactive Data Visualization with R Shiny</h1>
+    <h2 class="author"><div class="line-block">Wenjie Wang<br />
+Department of Statistics, UConn</div></h2>
+    <h3 class="date">January 30, 2018</h3>
+</section>
+
+<section id="getting-started" class="slide level2">
+<h2>Getting Started</h2>
+<ul>
+<li><p>slides available at <a href="https://statds.github.io/topic-presentation-wenjie2wang/" class="uri">https://statds.github.io/topic-presentation-wenjie2wang/</a></p></li>
+<li><p>source code of the slides: <a href="https://github.com/statds/topic-presentation-wenjie2wang/" target="_blank">https://github.com/statds/topic-presentation-wenjie2wang/</a></p></li>
+<li><p>R packages needed for following examples:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw">install.packages</span>(<span class="kw">c</span>(<span class="st">&quot;DT&quot;</span>, <span class="st">&quot;dygraphs&quot;</span>, <span class="st">&quot;leaflet&quot;</span>,</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2">                   <span class="st">&quot;plotly&quot;</span>, <span class="st">&quot;shiny&quot;</span>, <span class="st">&quot;shinythemes&quot;</span>))</a></code></pre></div></li>
+</ul>
+</section>
+<section id="what-is-r-shiny" class="slide level2">
+<h2>What is R Shiny?</h2>
+<ul>
+<li><strong>shiny</strong> is an R package that makes it easy to build interactive web applications straight from R.
+<ul>
+<li>homepage: <a href="https://shiny.rstudio.com" target="_blank">https://shiny.rstudio.com</a></li>
+<li>a collection of toy examples by RStudio: <a href="https://github.com/rstudio/shiny-examples" target="_blank">https://github.com/rstudio/shiny-examples</a></li>
+<li>official <a href="https://shiny.rstudio.com/gallery" target="_blank">gallery</a>, <a href="https://shiny.rstudio.com/tutorial" target="_blank">tutorial</a>, and <a href="https://github.com/rstudio/cheatsheets/blob/master/shiny.pdf" target="_blank">cheatsheet</a></li>
+<li>other galleries: <a href="https://www.showmeshiny.com" target="_blank">Show me Shiny</a>, <a href="https://plot.ly/r/shiny-gallery/" target="_blank">Plotly</a>, …</li>
+</ul></li>
+</ul>
+</section>
+<section id="selective-examples" class="slide level2">
+<h2>Selective examples</h2>
+<ul>
+<li><a href="https://gallery.shinyapps.io/001-hello/" target="_blank">Hello Shiny!</a></li>
+<li><a href="https://www.showmeshiny.com/historical-english-soccer/" target="_blank">Exploring Historical English Soccer Data</a></li>
+<li><a href="https://github.com/kb230557/Flu_Shiny_App" target="_blank">Weekly influenza surveillance data</a></li>
+<li><a href="http://www.remyzum.com/shiny/Paris_Accidentologie/" target="_blank">Paris car accidents</a></li>
+<li><a href="https://www.showmeshiny.com/shinyhome/" target="_blank">Real estate analytics</a> using Shiny dashboard</li>
+</ul>
+</section>
+<section id="structure-of-a-shiny-app" class="slide level2">
+<h2>Structure of a Shiny app</h2>
+<p>By execution order:</p>
+<ol type="1">
+<li><p><code>global.R</code>: an optional script for code needed in <code>ui.R</code> and <code>server.R</code></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">library</span>(shiny)              <span class="co"># e.g., attach the Shiny package</span></a></code></pre></div></li>
+<li><p><code>ui.R</code>: define user interface (UI) design</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">shinyUI</span>(<span class="kw">fluidPage</span>(</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">    ## e.g., create a fluid page</a>
+<a class="sourceLine" id="cb3-3" data-line-number="3">))</a></code></pre></div></li>
+<li><p><code>server.R</code>: define server-side logic</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw">shinyServer</span>(<span class="cf">function</span>(input, output, session) {</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">    ## a function with two required argument, `input` and `output`,</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3">    ## and an optional argument `session`</a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">})</a></code></pre></div></li>
+</ol>
+</section>
+<section id="alternative-structure" class="slide level2">
+<h2>Alternative structure</h2>
+<ul>
+<li>a sinlge script called <code>app.R</code></li>
+</ul>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw">library</span>(shiny)</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2"></a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">## e.g., create a fluid page</a>
+<a class="sourceLine" id="cb5-4" data-line-number="4">ui &lt;-<span class="st"> </span><span class="kw">fluidPage</span>(</a>
+<a class="sourceLine" id="cb5-5" data-line-number="5">    ## some ui elements and widgets</a>
+<a class="sourceLine" id="cb5-6" data-line-number="6">)</a>
+<a class="sourceLine" id="cb5-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb5-8" data-line-number="8">## define server-side logic</a>
+<a class="sourceLine" id="cb5-9" data-line-number="9">server &lt;-<span class="st"> </span><span class="cf">function</span>(input, output, session) {</a>
+<a class="sourceLine" id="cb5-10" data-line-number="10">    ## the server function body</a>
+<a class="sourceLine" id="cb5-11" data-line-number="11">}</a>
+<a class="sourceLine" id="cb5-12" data-line-number="12"></a>
+<a class="sourceLine" id="cb5-13" data-line-number="13"><span class="kw">shinyApp</span>(<span class="dt">ui =</span> ui, <span class="dt">server =</span> server)</a></code></pre></div>
+</section>
+<section id="sidebar-layout" class="slide level2">
+<h2>Sidebar layout</h2>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">ui &lt;-<span class="st"> </span><span class="kw">fluidPage</span>(</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2">    <span class="kw">titlePanel</span>(<span class="st">&quot;my title panel&quot;</span>),</a>
+<a class="sourceLine" id="cb6-3" data-line-number="3">    <span class="kw">sidebarLayout</span>(</a>
+<a class="sourceLine" id="cb6-4" data-line-number="4">        <span class="kw">sidebarPanel</span>(<span class="st">&quot;my sidebar panel&quot;</span>),</a>
+<a class="sourceLine" id="cb6-5" data-line-number="5">        <span class="kw">mainPanel</span>(<span class="st">&quot;my main panel&quot;</span>)</a>
+<a class="sourceLine" id="cb6-6" data-line-number="6">    )</a>
+<a class="sourceLine" id="cb6-7" data-line-number="7">)</a></code></pre></div>
+<hr/>
+<div class="container-fluid">
+<h2>my title panel</h2>
+<div class="row">
+<div class="col-sm-4">
+<form class="well">my sidebar panel</form>
+</div>
+<div class="col-sm-8">my main panel</div>
+</div>
+</div>
+</section>
+<section class="slide level2">
+
+<ul>
+<li><p>Shiny uses <a href="https://getbootstrap.com/docs/3.3/" target="_blank">Twitter Bootstrap 3</a>, the probably most popular HTML, CSS, and JS framework for developing responsive, mobile first projects on the web.</p></li>
+<li><p>the essential HTML code defined in <code>ui</code>:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode html"><code class="sourceCode html"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw">&lt;div</span><span class="ot"> class=</span><span class="st">&quot;container-fluid&quot;</span><span class="kw">&gt;</span></a>
+<a class="sourceLine" id="cb7-2" data-line-number="2">  <span class="kw">&lt;h2&gt;</span>my title panel<span class="kw">&lt;/h2&gt;</span></a>
+<a class="sourceLine" id="cb7-3" data-line-number="3">  <span class="kw">&lt;div</span><span class="ot"> class=</span><span class="st">&quot;row&quot;</span><span class="kw">&gt;</span></a>
+<a class="sourceLine" id="cb7-4" data-line-number="4">    <span class="kw">&lt;div</span><span class="ot"> class=</span><span class="st">&quot;col-sm-4&quot;</span><span class="kw">&gt;</span></a>
+<a class="sourceLine" id="cb7-5" data-line-number="5">      <span class="kw">&lt;form</span><span class="ot"> class=</span><span class="st">&quot;well&quot;</span><span class="kw">&gt;</span>my sidebar panel<span class="kw">&lt;/form&gt;</span></a>
+<a class="sourceLine" id="cb7-6" data-line-number="6">    <span class="kw">&lt;/div&gt;</span></a>
+<a class="sourceLine" id="cb7-7" data-line-number="7">    <span class="kw">&lt;div</span><span class="ot"> class=</span><span class="st">&quot;col-sm-8&quot;</span><span class="kw">&gt;</span>my main panel<span class="kw">&lt;/div&gt;</span></a>
+<a class="sourceLine" id="cb7-8" data-line-number="8">  <span class="kw">&lt;/div&gt;</span></a>
+<a class="sourceLine" id="cb7-9" data-line-number="9"><span class="kw">&lt;/div&gt;</span></a></code></pre></div></li>
+<li><p>The more fundamental layout constructor functions are <code>fluidRow()</code> and <code>column()</code>.</p></li>
+</ul>
+</section>
+<section id="html-builders" class="slide level2">
+<h2>HTML builders</h2>
+<!--
+    the following table source is mainly taken from
+    http://shiny.rstudio.com/tutorial/written-tutorial/lesson2/
+-->
+<table>
+<thead>
+<tr>
+<th>
+Shiny
+</th>
+<th>
+HTML5
+</th>
+<th>
+creates
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>p()</code>
+</td>
+<td>
+<code>&lt;p&gt;</code>
+</td>
+<td>
+A paragraph of text
+</td>
+</tr>
+<tr>
+<td>
+<code>h1(), …, h6()</code>
+</td>
+<td>
+<code>&lt;h1&gt;, …, &lt;h6&gt;</code>
+</td>
+<td>
+a first, …, sixth level header
+</td>
+</tr>
+<tr>
+<td>
+<code>a()</code>
+</td>
+<td>
+<code>&lt;a&gt;</code>
+</td>
+<td>
+A hyper link
+</td>
+</tr>
+<tr>
+<td>
+<code>br()</code>
+</td>
+<td>
+<code>&lt;br&gt;</code>
+</td>
+<td>
+A line break
+</td>
+</tr>
+<tr>
+<td>
+<code>div()</code>
+</td>
+<td>
+<code>&lt;div&gt;</code>
+</td>
+<td>
+A division with a uniform style
+</td>
+</tr>
+<tr>
+<td>
+<code>span()</code>
+</td>
+<td>
+<code>&lt;span&gt;</code>
+</td>
+<td>
+An in-line version of division
+</td>
+</tr>
+<tr>
+<td>
+<code>strong()</code>
+</td>
+<td>
+<code>&lt;strong&gt;</code>
+</td>
+<td>
+Bold text
+</td>
+</tr>
+<tr>
+<td>
+<code>em()</code>
+</td>
+<td>
+<code>&lt;em&gt;</code>
+</td>
+<td>
+Italicized text
+</td>
+</tr>
+<tr>
+<td>
+<code>…</code>
+</td>
+<td>
+<code>…</code>
+</td>
+<td>
+…
+</td>
+</tr>
+<tr>
+<td>
+<code>HTML()</code>
+</td>
+<td>
+ 
+</td>
+<td>
+Directly passes character strings as HTML
+</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>shiny</strong> imports HTML builder functions from <strong>htmltools</strong>.</li>
+<li><code>names(tags)</code> returns a complete valid HTML5 tag list.</li>
+</ul>
+</section>
+<section id="basic-widgets" class="slide level2">
+<h2>Basic widgets</h2>
+<ul>
+<li>What is a web widget? A web element that users can interact with.</li>
+<li><a href="https://shiny.rstudio.com/gallery/widget-gallery.html" target="_blank">Standard widgets gallery</a></li>
+<li>The first two arguments for each widget function are
+<ul>
+<li><code>id</code> for widget name: users will not see the name, but you can use it to access the widget’s value. The name should be a character string.</li>
+<li><code>label</code> for widget label: this label will appear with the widget in your app. It should be a character string, but it can be an empty string <code>&quot;&quot;</code>.</li>
+</ul></li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p>The standard Shiny widgets include</p>
+<!--
+    table source directly taken from
+    http://shiny.rstudio.com/tutorial/written-tutorial/lesson3/
+-->
+<table>
+<thead>
+<tr>
+<th>
+function
+</th>
+<th>
+widget
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>actionButton</code>
+</td>
+<td>
+Action Button
+</td>
+</tr>
+<tr>
+<td>
+<code>checkboxGroupInput</code>
+</td>
+<td>
+A group of check boxes
+</td>
+</tr>
+<tr>
+<td>
+<code>checkboxInput</code>
+</td>
+<td>
+A single check box
+</td>
+</tr>
+<tr>
+<td>
+<code>dateInput</code>
+</td>
+<td>
+A calendar to aid date selection
+</td>
+</tr>
+<tr>
+<td>
+<code>dateRangeInput</code>
+</td>
+<td>
+A pair of calendars for selecting a date range
+</td>
+</tr>
+<tr>
+<td>
+<code>fileInput</code>
+</td>
+<td>
+A file upload control wizard
+</td>
+</tr>
+<tr>
+<td>
+<code>helpText</code>
+</td>
+<td>
+Help text that can be added to an input form
+</td>
+</tr>
+<tr>
+<td>
+<code>numericInput</code>
+</td>
+<td>
+A field to enter numbers
+</td>
+</tr>
+<tr>
+<td>
+<code>radioButtons</code>
+</td>
+<td>
+A set of radio buttons
+</td>
+</tr>
+<tr>
+<td>
+<code>selectInput</code>
+</td>
+<td>
+A box with choices to select from
+</td>
+</tr>
+<tr>
+<td>
+<code>sliderInput</code>
+</td>
+<td>
+A slider bar
+</td>
+</tr>
+<tr>
+<td>
+<code>submitButton</code>
+</td>
+<td>
+A submit button
+</td>
+</tr>
+<tr>
+<td>
+<code>textInput</code>
+</td>
+<td>
+A field to enter text
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="reactive-output" class="slide level2">
+<h2>Reactive output</h2>
+<p><code>*Output</code> functions in <code>ui</code> or <code>ui.R</code> turn R objects into output of UI.</p>
+<!--
+    table source taken from
+    http://shiny.rstudio.com/tutorial/written-tutorial/lesson4/
+-->
+<table>
+<thead>
+<tr>
+<th>
+Output function
+</th>
+<th>
+Creates
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>htmlOutput</code>
+</td>
+<td>
+raw HTML
+</td>
+</tr>
+<tr>
+<td>
+<code>imageOutput</code>
+</td>
+<td>
+image
+</td>
+</tr>
+<tr>
+<td>
+<code>plotOutput</code>
+</td>
+<td>
+plot
+</td>
+</tr>
+<tr>
+<td>
+<code>tableOutput</code>
+</td>
+<td>
+table
+</td>
+</tr>
+<tr>
+<td>
+<code>textOutput</code>
+</td>
+<td>
+text
+</td>
+</tr>
+<tr>
+<td>
+<code>uiOutput</code>
+</td>
+<td>
+raw HTML
+</td>
+</tr>
+<tr>
+<td>
+<code>verbatimTextOutput</code>
+</td>
+<td>
+text
+</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>These <code>*Output</code> functions take output name/ID as input.</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<p><code>render*</code> functions in <code>server</code> or <code>server.R</code></p>
+<!--
+    table source taken from
+    http://shiny.rstudio.com/tutorial/written-tutorial/lesson4/
+-->
+<table>
+<thead>
+<tr>
+<th>
+render function
+</th>
+<th>
+creates
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<code>renderImage</code>
+</td>
+<td>
+images (saved as a link to a source file)
+</td>
+</tr>
+<tr>
+<td>
+<code>renderPlot</code>
+</td>
+<td>
+plots
+</td>
+</tr>
+<tr>
+<td>
+<code>renderPrint</code>
+</td>
+<td>
+any printed output
+</td>
+</tr>
+<tr>
+<td>
+<code>renderTable</code>
+</td>
+<td>
+data frame, matrix, other table like structures
+</td>
+</tr>
+<tr>
+<td>
+<code>renderText</code>
+</td>
+<td>
+character strings
+</td>
+</tr>
+<tr>
+<td>
+<code>renderUI</code>
+</td>
+<td>
+a Shiny tag object or HTML
+</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>These <code>render*</code> functions take a single argument: an R expression surrounded by <code>{}</code>.</li>
+<li>Shiny runs the R expressions inside <code>render*</code> functions once each time a user changes the value of a widget.</li>
+</ul>
+</section>
+<section class="slide level2">
+
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">ui &lt;-<span class="st"> </span><span class="kw">fluidPage</span>(</a>
+<a class="sourceLine" id="cb8-2" data-line-number="2">    <span class="kw">titlePanel</span>(<span class="st">&quot;a simple example of reactive output&quot;</span>),</a>
+<a class="sourceLine" id="cb8-3" data-line-number="3">    <span class="kw">sidebarLayout</span>(</a>
+<a class="sourceLine" id="cb8-4" data-line-number="4">        <span class="kw">sidebarPanel</span>(</a>
+<a class="sourceLine" id="cb8-5" data-line-number="5">            <span class="kw">selectInput</span>(<span class="st">&quot;cyl&quot;</span>, <span class="st">&quot;Cylinders&quot;</span>,</a>
+<a class="sourceLine" id="cb8-6" data-line-number="6">                        <span class="dt">choices =</span> <span class="kw">sort</span>(<span class="kw">unique</span>(mtcars<span class="op">$</span>cyl)),</a>
+<a class="sourceLine" id="cb8-7" data-line-number="7">                        <span class="dt">selected =</span> <span class="dv">4</span>)</a>
+<a class="sourceLine" id="cb8-8" data-line-number="8">        ),</a>
+<a class="sourceLine" id="cb8-9" data-line-number="9">        <span class="kw">mainPanel</span>(<span class="kw">plotOutput</span>(<span class="st">&quot;mpg_boxplot&quot;</span>))</a>
+<a class="sourceLine" id="cb8-10" data-line-number="10">    )</a>
+<a class="sourceLine" id="cb8-11" data-line-number="11">)</a>
+<a class="sourceLine" id="cb8-12" data-line-number="12"></a>
+<a class="sourceLine" id="cb8-13" data-line-number="13">server &lt;-<span class="st"> </span><span class="cf">function</span>(input, output) {</a>
+<a class="sourceLine" id="cb8-14" data-line-number="14">    ## the `renderPlot` runs every time a user changes input$cyl</a>
+<a class="sourceLine" id="cb8-15" data-line-number="15">    output<span class="op">$</span>mpg_boxplot &lt;-<span class="st"> </span><span class="kw">renderPlot</span>({</a>
+<a class="sourceLine" id="cb8-16" data-line-number="16">        ## filtering the cars models in the mtcars dataset</a>
+<a class="sourceLine" id="cb8-17" data-line-number="17">        ## by a input cylinder number</a>
+<a class="sourceLine" id="cb8-18" data-line-number="18">        dat &lt;-<span class="st"> </span><span class="kw">subset</span>(mtcars, cyl <span class="op">==</span><span class="st"> </span>input<span class="op">$</span>cyl)</a>
+<a class="sourceLine" id="cb8-19" data-line-number="19">        ## draw a boxplot of mpg for the filtered data</a>
+<a class="sourceLine" id="cb8-20" data-line-number="20">        <span class="kw">with</span>(dat, <span class="kw">boxplot</span>(mpg))</a>
+<a class="sourceLine" id="cb8-21" data-line-number="21">    })</a>
+<a class="sourceLine" id="cb8-22" data-line-number="22">}</a>
+<a class="sourceLine" id="cb8-23" data-line-number="23"></a>
+<a class="sourceLine" id="cb8-24" data-line-number="24"><span class="kw">shinyApp</span>(ui, server)</a></code></pre></div>
+</section>
+<section class="slide level2">
+
+<iframe src="https://shiny.wenjie-stat.me/examples/mtcars/?showcase=0" width="100%" height="600px">
+</iframe>
+</section>
+<section id="reactive-expressions" class="slide level2">
+<h2>Reactive expressions</h2>
+<ul>
+<li>Create a reactive expression by the <code>reactive()</code> function, which takes an R expression surrounded by <code>{}</code> similar to <code>render*</code> functions.</li>
+</ul>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">server &lt;-<span class="st"> </span><span class="cf">function</span>(input, output, session) {</a>
+<a class="sourceLine" id="cb9-2" data-line-number="2">    ## e.g., a simple reactive expression for filtering the cars models</a>
+<a class="sourceLine" id="cb9-3" data-line-number="3">    ## in the mtcars dataset by a input cylinder</a>
+<a class="sourceLine" id="cb9-4" data-line-number="4">    dataInput &lt;-<span class="st"> </span><span class="kw">reactive</span>({</a>
+<a class="sourceLine" id="cb9-5" data-line-number="5">        <span class="kw">subset</span>(mtcars, cyl <span class="op">==</span><span class="st"> </span>input<span class="op">$</span>cyl)</a>
+<a class="sourceLine" id="cb9-6" data-line-number="6">    })</a>
+<a class="sourceLine" id="cb9-7" data-line-number="7">    ## draw a boxplot of mpg for the filtered data</a>
+<a class="sourceLine" id="cb9-8" data-line-number="8">    output<span class="op">$</span>mpg_boxplot &lt;-<span class="st"> </span><span class="kw">renderPlot</span>({</a>
+<a class="sourceLine" id="cb9-9" data-line-number="9">        dat &lt;-<span class="st"> </span><span class="kw">dataInput</span>()</a>
+<a class="sourceLine" id="cb9-10" data-line-number="10">        <span class="kw">with</span>(dat, <span class="kw">boxplot</span>(mpg))</a>
+<a class="sourceLine" id="cb9-11" data-line-number="11">    })</a>
+<a class="sourceLine" id="cb9-12" data-line-number="12">}</a></code></pre></div>
+<ul>
+<li>Reactive expressions cache values and update them only when it is necessary, which make the app faster.</li>
+</ul>
+</section>
+<section id="share-shiny-apps" class="slide level2">
+<h2>Share Shiny apps</h2>
+<ul>
+<li><p>share as R scripts by <code>runApp()</code>, <code>runUrl()</code>, <code>runGitHub()</code> or <code>runGist()</code></p></li>
+<li>share as a web page:
+<ul>
+<li><a href="https://www.shinyapps.io" target="_blank">https://www.shinyapps.io</a>
+<ul>
+<li>free for 5 apps and 25 active hours per month</li>
+</ul></li>
+<li>Shiny server open source
+<ul>
+<li>very basic features</li>
+<li>e.g., <a href="https://shiny.wenjie-stat.me" target="_blank">https://shiny.wenjie-stat.me</a></li>
+</ul></li>
+<li>Shiny server Pro</li>
+<li>RStudio Connect</li>
+</ul></li>
+</ul>
+</section>
+<section id="more-advanced-html-widgets" class="slide level2">
+<h2>More advanced HTML widgets</h2>
+<ul>
+<li><strong><a href="http://www.htmlwidgets.org/" target="_blank">htmlwidgets</a></strong> package provides a framework that helps to bring the best of JavaScript data visualization to R.</li>
+<li>example R packages built with <strong>htmltwidgets</strong>:
+<ul>
+<li><strong><a href="https://github.com/rstudio/leaflet" target="_blank">leaflet</a></strong> for geo-spatial mapping powered by JavaScript library leaflet</li>
+<li><strong><a href="https://github.com/rstudio/dygraphs" target="_blank">dygraphs</a></strong> for time series charting powered by JavaScript library dygraphs</li>
+<li><strong><a href="https://plot.ly/r/" target="_blank">plotly</a></strong> and <strong><a href="http://jkunst.com/highcharter/" target="_blank">Highcharter</a></strong> for general interactive graphics powered by JavaScript library plotly.js and Highcharts, respectively.</li>
+<li><strong><a href="https://github.com/rstudio/DT" target="_blank">DT</a></strong> for tabular data display powered by JavaScript library DataTables.</li>
+</ul></li>
+</ul>
+</section>
+<section id="leaflet-example" class="slide level2">
+<h2>leaflet example</h2>
+<ul>
+<li>locations of earthquakes off Fiji</li>
+</ul>
+<iframe src="https://shiny.wenjie-stat.me/examples/leaflet/?showcase=0" width="100%" height="500px">
+</iframe>
+</section>
+<section id="dygraphs-example" class="slide level2">
+<h2>dygraphs example</h2>
+<iframe src="https://shiny.wenjie-stat.me/examples/dygraphs/?showcase=0" width="100%" height="500px">
+</iframe>
+</section>
+<section id="plotly-example" class="slide level2">
+<h2>plotly example</h2>
+<iframe src="https://shiny.wenjie-stat.me/examples/plotly/?showcase=0" width="100%" height="600px">
+</iframe>
+</section>
+<section id="dt-example" class="slide level2">
+<h2>DT example</h2>
+<iframe src="https://shiny.wenjie-stat.me/examples/DT/?showcase=0" width="100%" height="600px">
+</iframe>
+</section>
+<section id="more-options-on-ui-and-control-widgets" class="slide level2">
+<h2>More options on UI and control widgets</h2>
+<ul>
+<li><strong><a href="https://github.com/rstudio/shinythemes" target="_blank">shinythemes</a></strong> includes several Bootstrap themes from <a href="https://bootswatch.com/" target="_blank">Bootswatch</a>.</li>
+<li><strong><a href="https://github.com/rstudio/shinythemes" target="_blank">shinydashboard</a></strong> makes it easy to use Shiny to create dashboards.</li>
+<li><strong><a href="https://github.com/rstudio/miniUI" target="_blank">miniUI</a></strong> provides UI widget and layout functions for writing Shiny apps that work well on small screens.</li>
+<li><strong><a href="https://github.com/dreamRs/shinyWidgets" target="_blank">shinyWidgets</a></strong> provides more control widgets that are not available in <strong>shiny</strong> package.</li>
+<li><strong><a href="https://github.com/trestletech/shinyAce" target="_blank">shinyAce</a></strong> integrates the <a href="https://ace.c9.io" target="_blank">Ace text editor</a> with Shiny.</li>
+<li><strong><a href="https://github.com/Appsilon/shiny.semantic" target="_blank">shiny.semantic</a></strong> provides a wrapper for <a href="https://semantic-ui.com" target="_blank">Semantic UI</a>.</li>
+<li>…</li>
+</ul>
+</section>
+<section id="further-reading" class="slide level2">
+<h2>Further reading</h2>
+<ul>
+<li><a href="https://github.com/daattali/advanced-shiny" target="_blank">a collection of Shiny tips &amp; tricks</a></li>
+<li><a href="https://shiny.rstudio.com/articles/modules.html" target="_blank">modularizing Shiny app code</a></li>
+<li><strong><a href="https://github.com/rstudio/shinytest" target="_blank">shinytest</a></strong> for automated testing for Shiny apps</li>
+<li><a href="https://shiny.rstudio.com/articles/" target="_blank">more articles</a> from RStudio</li>
+</ul>
+</section>
+<section id="thanks" class="slide level2">
+<h2>Thanks!</h2>
+<ul>
+<li class="fragment">a cool plate found at (UConn) Y lot in last Summer <br/><img src="www/imgs/IMG_20170812_142318.jpg" width=350 /></li>
+</ul>
+</section>
+    </div>
+  </div>
+
+  <script src="index_files/reveal.js-3.3.0.1/lib/js/head.min.js"></script>
+  <script src="index_files/reveal.js-3.3.0.1/js/reveal.js"></script>
+
+  <script>
+
+      // Full list of configuration options available at:
+      // https://github.com/hakimel/reveal.js#configuration
+      Reveal.initialize({
+        // Display controls in the bottom right corner
+        controls: false,
+        // Display the page number of the current slide
+        slideNumber: 'c/t',
+        // Push each slide change to the browser history
+        history: true,
+        // Vertical centering of slides
+        center: false,
+        // Opens links in an iframe preview overlay
+        previewLinks: false,
+        // Transition style
+        transition: 'none', // none/fade/slide/convex/concave/zoom
+        // Transition style for full page slide backgrounds
+        backgroundTransition: 'default', // none/fade/slide/convex/concave/zoom
+
+
+
+        // Optional reveal.js plugins
+        dependencies: [
+        ]
+      });
+    </script>
+  <!-- dynamically load mathjax for compatibility with self-contained -->
+  <script>
+    (function () {
+      var script = document.createElement("script");
+      script.type = "text/javascript";
+      script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+      document.getElementsByTagName("head")[0].appendChild(script);
+    })();
+  </script>
+
+<script>
+  (function() {
+    if (window.jQuery) {
+      Reveal.addEventListener( 'slidechanged', function(event) {  
+        window.jQuery(event.previousSlide).trigger('hidden');
+        window.jQuery(event.currentSlide).trigger('shown');
+      });
+    }
+  })();
+</script>
+
+<script src="www/js/highlight_comments.js"></script>
+
+  </body>
+</html>
