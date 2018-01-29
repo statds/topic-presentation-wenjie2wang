@@ -1,4 +1,5 @@
 ## examples taken from https://plot.ly/r/shiny-coupled-hover-events/
+## with some slight modifications
 
 server <- function(input, output) {
 
@@ -20,7 +21,7 @@ server <- function(input, output) {
 
     ## Plot time series chart
     output$timeseries <- renderPlotly({
-        p <- plot_ly(source = "source") %>%
+        p <- plot_ly(source = "source", height = 450) %>%
             add_lines(data = ds, x = ~Date, y = ~value, color = ~variable,
                       mode = "lines", line = list(width = 3))
 
@@ -67,7 +68,8 @@ server <- function(input, output) {
 
         ply <- plot_ly(x = rownames(cormat), y = colnames(cormat),
                        z = cormat, type = "heatmap",
-                       colors = colorRamp(c('#e3dfc8', '#808c6c')))%>%
+                       colors = colorRamp(c('#e3dfc8', '#808c6c')),
+                       height = 450) %>%
             layout(title = "Correlation heatmap",
                    xaxis = list(title = ""),
                    yaxis = list(title = ""))

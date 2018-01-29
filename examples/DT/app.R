@@ -28,7 +28,12 @@ server <- function(input, output) {
 
     output$dt <- renderDataTable({
         dataInput()
-    })
+    }, options = list(
+           lengthMenu = list(
+               c(6, 15, 30),
+               c('6', '15', '30')
+           ))
+    )
 
 }
 

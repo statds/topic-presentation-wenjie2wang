@@ -1,5 +1,5 @@
 ## examples taken from https://plot.ly/r/shiny-coupled-hover-events/
-## with a slightly modification
+## with some slight modifications
 
 library(shiny)
 library(plotly)
@@ -23,8 +23,8 @@ ui <- fluidPage(
                 choices = c(10, 20, 30, 60, 90), selected = 10),
     ## Plotly Chart Area
     fluidRow(
-        column(6, plotlyOutput(outputId = "timeseries", height = "600px")),
-        column(6, plotlyOutput(outputId = "correlation", height = "600px"))
+        column(6, plotlyOutput(outputId = "timeseries")),
+        column(6, plotlyOutput(outputId = "correlation"))
     )
 
     ## tags$hr(),
