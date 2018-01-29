@@ -11,5 +11,5 @@ The slides are powered by R Markdown and reveal.js (R pacakge **rmarkdown** and
 **revealjs**), and available at [here][slides].
 
 
-[slides]: https://statds.github.io/topic-presentation-wenjie2wang/
+[slides]: https://statds.github.io/topic-presentation-wenjie_wang/
 

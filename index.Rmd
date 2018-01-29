@@ -49,8 +49,8 @@ paste4 <- function(...) paste(..., sep = "/")
 
 
 ### define some constants
-slides_url <- "https://statds.github.io/topic-presentation-wenjie2wang/"
-repo_url <- "https://github.com/statds/topic-presentation-wenjie2wang/"
+slides_url <- "https://statds.github.io/topic-presentation-wenjie_wang/"
+repo_url <- "https://github.com/statds/topic-presentation-wenjie_wang/"
 rstudio_github <- "https://github.com/rstudio"
 shiny_homepage <- "https://shiny.rstudio.com"
 shiny_examples_github <- paste4(rstudio_github, "shiny-examples")
