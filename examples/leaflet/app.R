@@ -1,8 +1,17 @@
 ## example taken from http://rstudio.github.io/leaflet/shiny.html
+## with some minor modifications
 
 library(shiny)
 library(leaflet)
 library(RColorBrewer)
+
+## remedy to load leaflet correctly from revealjs slides
+colorsVec <- rownames(subset(brewer.pal.info,
+                             category %in% c("seq", "div")))
+default_color <- colorsVec[1]
+default_colors_gen <- colorNumeric(default_color, quakes$mag)
+default_colors <- default_colors_gen(quakes$mag)
+
 
 ui <- bootstrapPage(
     tags$style(type = "text/css", "html, body {width:100%;height:100%}"),
@@ -15,10 +24,9 @@ ui <- bootstrapPage(
                               step = 0.1
                               ),
                   selectInput("colors", "Color Scheme",
-                              rownames(subset(brewer.pal.info,
-                                              category %in% c("seq", "div")))
-                              ),
-                  checkboxInput("legend", "Show legend", TRUE)
+                              choices = colorsVec,
+                              selected = default_color),
+                  checkboxInput("legend", "Show legend", FALSE)
                   )
 )
 
@@ -40,7 +48,15 @@ server <- function(input, output, session) {
         ## won't need to change dynamically (at least, not unless the
         ## entire map is being torn down and recreated).
         leaflet(quakes) %>% addTiles() %>%
-            fitBounds(~min(long), ~min(lat), ~max(long), ~max(lat))
+            ## remedy to load leaflet correctly from revealjs slides
+            fitBounds(~min(long), ~min(lat), ~max(long), ~max(lat)) %>%
+            addCircles(
+                ~long, ~lat,
+                radius = ~10^mag/10,
+                weight = 1, color = "#777777",
+                fillColor = ~default_colors,
+                fillOpacity = 0.7, popup = ~paste(mag)
+            )
     })
 
     ## Incremental changes to the map (in this case, replacing the
@@ -52,11 +68,14 @@ server <- function(input, output, session) {
 
         leafletProxy("map", data = filteredData()) %>%
             clearShapes() %>%
-            addCircles(radius = ~10^mag/10,
-                       weight = 1, color = "#777777",
-                       fillColor = ~pal(mag),
-                       fillOpacity = 0.7, popup = ~paste(mag)
-                       )
+            addCircles(
+                ~long, ~lat,
+                radius = ~10^mag/10,
+                weight = 1, color = "#777777",
+                fillColor = ~pal(mag),
+                fillOpacity = 0.7, popup = ~paste(mag)
+            )
+
     })
 
     ## Use a separate observer to recreate the legend as needed.
