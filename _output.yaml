@@ -5,6 +5,7 @@ revealjs::revealjs_presentation:
   highlight: default
   css: www/css/styles.css
   includes:
+    in_header: docs/www/html/head.html
     after_body: docs/www/html/suffix.html
   fig_width: 9
   fig_height: 5
