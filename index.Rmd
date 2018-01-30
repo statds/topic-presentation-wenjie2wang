@@ -464,7 +464,7 @@ server <- function(input, output) {
     ## the `renderPlot` runs every time a user changes input$cyl
     output$mpg_boxplot <- renderPlot({
         ## filtering the cars models in the mtcars dataset
-        ## by a input cylinder number
+        ## by the input cylinder number
         dat <- subset(mtcars, cyl == input$cyl)
         ## draw a boxplot of mpg for the filtered data
         with(dat, boxplot(mpg))
@@ -490,7 +490,7 @@ knitr::include_app("https://shiny.wenjie-stat.me/examples/mtcars/",
 ```r
 server <- function(input, output, session) {
     ## e.g., a simple reactive expression for filtering the cars models
-    ## in the mtcars dataset by a input cylinder
+    ## in the mtcars dataset by the input cylinder
     dataInput <- reactive({
         subset(mtcars, cyl == input$cyl)
     })
