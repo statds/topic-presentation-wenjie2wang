@@ -34,7 +34,7 @@ need.packages <- function(pkg, ...)
 }
 
 ## other packages needed for reproducing these slides
-pkgs <- c("DT", "dygraphs", "htmltools", "leaflet", "plotly", "shiny")
+pkgs <- c("DT", "dygraphs", "leaflet", "plotly", "shiny")
 need.packages(pkgs)
 
 
@@ -68,8 +68,7 @@ shiny_cheatsheet <- paste4(rstudio_github, "cheatsheets/blob/master/shiny.pdf")
 - R packages needed for following examples:
 
   ```{r pkgs-slides, eval = FALSE}
-  install.packages(c("DT", "dygraphs", "leaflet",
-                     "plotly", "shiny", "shinythemes"))
+  install.packages(c("DT", "dygraphs", "leaflet", "plotly", "shiny"))
   ```
 
 

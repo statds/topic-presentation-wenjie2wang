@@ -3,12 +3,12 @@
 
 library(shiny)
 library(plotly)
-library(shinythemes)
+## library(shinythemes)
 library(dplyr)
 
 ui <- fluidPage(
     ## Set theme
-    theme = shinytheme("spacelab"),
+    ## theme = shinytheme("spacelab"),
 
     ## Some help text
     ## h2("Coupled hover-events in plotly charts using Shiny"),
